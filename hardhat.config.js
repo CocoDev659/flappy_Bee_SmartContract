@@ -37,9 +37,8 @@ module.exports = {
       },
     ],
   },
-  defaultNetwork: "testnet",
+  defaultNetwork: "bsctest",
   etherscan: {
-    // apiKey: process.env.POLYGON_API_KEY,
     apiKey: process.env.BSCSCAN_API_KEY,
   },
   networks: {
