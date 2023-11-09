@@ -33,13 +33,30 @@ module.exports = {
         },
       },
       {
-        version: "0.8.0",
+        version: "0.8.19",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 2000,
+            // details: { yul: false },
+          },
+        },
+      },
+      {
+        version: "0.8.21",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 2000,
+            // details: { yul: false },
+          },
+        },
       },
     ],
   },
-  defaultNetwork: "bsctest",
+  defaultNetwork: "goerli",
   etherscan: {
-    apiKey: process.env.BSCSCAN_API_KEY,
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
   networks: {
     localhost: {
@@ -48,14 +65,13 @@ module.exports = {
       gasPrice: 20000000000,
       accounts: [process.env.PRIVATEKEY],
     },
-    testnet: {
-      url: "https://matic-mumbai.chainstacklabs.com",
-      chainId: 80001,
+    goerli: {
+      url: "https://goerli.infura.io/v3/b45ff4de8a1e4e7db9b781b4a8fcdc5a",
+      chainId: 5,
       accounts: [`0x${process.env.PRIVATEKEY}`],
-      gas: 2100000,
-      gasPrice: 20000000000,
-      // gasPrice: 8000000000,
-      // saveDeployments: true,
+      gas: "auto",
+      gasPrice: "auto",
+      maxCodeSize: 10000000,
     },
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/b45ff4de8a1e4e7db9b781b4a8fcdc5a",
