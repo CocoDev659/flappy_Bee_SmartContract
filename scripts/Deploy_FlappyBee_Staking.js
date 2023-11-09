@@ -14,8 +14,8 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const nftCollection = await hre.ethers.getContractFactory("GameItem");
-  const greeter = await nftCollection.deploy();
+  const nftCollection = await hre.ethers.getContractFactory("StakingBEET");
+  const greeter = await nftCollection.deploy("0x6e35685B244daa4c50e0645300b19df56A132a72");
 
   await greeter.deployed();
 

@@ -1,0 +1,243 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+
+contract StakingContract {
+    using SafeMath for uint256;
+    using SafeERC20 for IERC20;
+
+    IERC20 public token;
+    IERC20 public rewardToken;
+
+    uint256 public stakingRewardsRate = 1200; // 12% annual rewards rate
+    uint256 public unlockPeriod = 16 days;
+
+    struct Stake {
+        uint256 amount;
+        uint256 startTime;
+        uint256 lastClaimTime;
+    }
+
+    mapping(address => Stake) public stakes;
+
+    event Staked(address indexed user, uint256 amount);
+    event Withdrawn(address indexed user, uint256 amount);
+    event RewardsClaimed(address indexed user, uint256 amount);
+
+    constructor(address _token, address _rewardToken) {
+        token = IERC20(_token);
+        rewardToken = IERC20(_rewardToken);
+    }
+
+    function stake(uint256 amount) external {
+        require(amount > 0, "Amount must be greater than zero");
+
+        uint256 rewards = calculateRewards(msg.sender);
+        if (rewards > 0) {
+            stakes[msg.sender].lastClaimTime = block.timestamp;
+            rewardToken.safeTransfer(msg.sender, rewards);
+            emit RewardsClaimed(msg.sender, rewards);
+        }
+
+        token.safeTransferFrom(msg.sender, address(this), amount);
+        stakes[msg.sender].amount = stakes[msg.sender].amount.add(amount);
+        stakes[msg.sender].startTime = block.timestamp;
+        stakes[msg.sender].lastClaimTime = block.timestamp;
+
+        emit Staked(msg.sender, amount);
+    }
+
+    function withdraw() external {
+        require(stakes[msg.sender].amount > 0, "No stake found");
+        require(block.timestamp >= stakes[msg.sender].startTime.add(unlockPeriod), "Unlock period not over");
+
+        uint256 rewards = calculateRewards(msg.sender);
+        if (rewards > 0) {
+            stakes[msg.sender].lastClaimTime = block.timestamp;
+            rewardToken.safeTransfer(msg.sender, rewards);
+            emit RewardsClaimed(msg.sender, rewards);
+        }
+
+        uint256 amount = stakes[msg.sender].amount;
+        stakes[msg.sender].amount = 0;
+        stakes[msg.sender].startTime = 0;
+        stakes[msg.sender].lastClaimTime = 0;
+
+        token.safeTransfer(msg.sender, amount);
+
+        emit Withdrawn(msg.sender, amount);
+    }
+
+    function claimRewards() external {
+        require(stakes[msg.sender].amount > 0, "No stake found");
+
+        uint256 rewards = calculateRewards(msg.sender);
+        require(rewards > 0, "No rewards to claim");
+
+        stakes[msg.sender].lastClaimTime = block.timestamp;
+        rewardToken.safeTransfer(msg.sender, rewards);
+
+        emit RewardsClaimed(msg.sender, rewards);
+    }
+
+    function calculateRewards(address user) public view returns (uint256) {
+        uint256 stakedAmount = stakes[user].amount;
+        uint256 lastClaimTime = stakes[user].lastClaimTime;
+        uint256 currentTime = block.timestamp;
+
+        if (stakedAmount == 0 || lastClaimTime >= currentTime) {
+            return 0;
+        }
+
+        uint256 rewardDuration = currentTime.sub(lastClaimTime);
+        uint256 rewards = stakedAmount.mul(stakingRewardsRate).mul(rewardDuration).div(365 days).div(10000);
+
+        return rewards;
+    }
+    
+    function getStakedAmount(address user) public view returns (uint256) {
+        return stakes[user].amount;
+    }
+    
+    function getRemainingWithdrawPeriod(address user) public view returns (uint256) {
+        uint256 endTime = stakes[user].startTime.add(unlockPeriod);
+        if (block.timestamp >= endTime) {
+            return 0;
+        } else {
+            return endTime.sub(block.timestamp);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+solidity
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+
+contract StakingContract {
+    using SafeMath for uint256;
+    using SafeERC20 for IERC20;
+
+    IERC20 public token;
+    IERC20 public rewardToken;
+    address public rewardWallet;
+
+    uint256 public stakingRewardsRate = 1200; // 12% annual rewards rate
+    uint256 public unlockPeriod = 16 days;
+
+    struct Stake {
+        uint256 amount;
+        uint256 startTime;
+        uint256 lastClaimTime;
+    }
+
+    mapping(address => Stake) public stakes;
+
+    event Staked(address indexed user, uint256 amount);
+    event Withdrawn(address indexed user, uint256 amount);
+    event RewardsClaimed(address indexed user, uint256 amount);
+
+    constructor(address _token, address _rewardToken, address _rewardWallet) {
+        token = IERC20(_token);
+        rewardToken = IERC20(_rewardToken);
+        rewardWallet = _rewardWallet;
+    }
+
+    function stake(uint256 amount) external {
+        require(amount > 0, "Amount must be greater than zero");
+
+        uint256 rewards = calculateRewards(msg.sender);
+        if (rewards > 0) {
+            stakes[msg.sender].lastClaimTime = block.timestamp;
+            rewardToken.safeTransfer(msg.sender, rewards);
+            emit RewardsClaimed(msg.sender, rewards);
+        }
+
+        token.safeTransferFrom(msg.sender, address(this), amount);
+        stakes[msg.sender].amount = stakes[msg.sender].amount.add(amount);
+        stakes[msg.sender].startTime = block.timestamp;
+        stakes[msg.sender].lastClaimTime = block.timestamp;
+
+        emit Staked(msg.sender, amount);
+    }
+
+    function withdraw() external {
+        require(stakes[msg.sender].amount > 0, "No stake found");
+        require(block.timestamp >= stakes[msg.sender].startTime.add(unlockPeriod), "Unlock period not over");
+
+        uint256 rewards = calculateRewards(msg.sender);
+        if (rewards > 0) {
+            stakes[msg.sender].lastClaimTime = block.timestamp;
+            rewardToken.safeTransfer(msg.sender, rewards);
+            emit RewardsClaimed(msg.sender, rewards);
+        }
+
+        uint256 amount = stakes[msg.sender].amount;
+        stakes[msg.sender].amount = 0;
+        stakes[msg.sender].startTime = 0;
+        stakes[msg.sender].lastClaimTime = 0;
+
+        token.safeTransfer(msg.sender, amount);
+
+        emit Withdrawn(msg.sender, amount);
+    }
+
+    function claimRewards() external {
+        require(stakes[msg.sender].amount > 0, "No stake found");
+
+        uint256 rewards = calculateRewards(msg.sender);
+        require(rewards > 0, "No rewards to claim");
+
+        stakes[msg.sender].lastClaimTime = block.timestamp;
+        rewardToken.safeTransfer(msg.sender, rewards);
+
+        emit RewardsClaimed(msg.sender, rewards);
+    }
+
+    function calculateRewards(address user) public view returns (uint256) {
+        uint256 stakedAmount = stakes[user].amount;
+        uint256 lastClaimTime = stakes[user].lastClaimTime;
+        uint256 currentTime = block.timestamp;
+
+        if (stakedAmount == 0 || lastClaimTime >= currentTime) {
+            return 0;
+        }
+
+        uint256 rewardDuration = currentTime.sub(lastClaimTime);
+        uint256 rewards = stakedAmount.mul(stakingRewardsRate).mul(rewardDuration).div(365 days).div(10000);
+
+        return rewards;
+    }
+    
+    function getStakedAmount(address user) public view returns (uint256) {
+        return stakes[user].amount;
+    }
+    
+    function getRemainingWithdrawPeriod(address user) public view returns (uint256) {
+        uint256 endTime = stakes[user].startTime.add(unlockPeriod);
+        if (block.timestamp >= endTime) {
+            return 0;
+        } else {
+            return endTime.sub(block.timestamp);
+        }
+    }
+    
+    function setRewardWallet(address _rewardWallet) external {
+        require(msg.sender == rewardWallet, "Only reward wallet can set the address");
+        rewardWallet = _rewardWallet;
+    }
+}
