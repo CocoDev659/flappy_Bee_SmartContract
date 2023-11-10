@@ -21,6 +21,9 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 // }
 
 contract StakingBEET {
+    using SafeMath for uint256;
+    using SafeERC20 for IERC20;
+
     struct Stake {
         uint256 amount;
         uint256 startTime;
@@ -32,15 +35,29 @@ contract StakingBEET {
     mapping(address => uint256) public rewards;
 
     IERC20 public token;
+    address public owner;
     uint256 public rewardPercentPerYear = 12; // 12% pe year
-    uint256 public constant secondsPerDay = 86400; // 24*60*60 secs = one day
-    uint256 public constant secondsPerYear = 31536000;
+    uint256 public constant secondsPerDay = 86400; // 24*60*60 secs = one day, 86400
+    uint256 public constant lockPeriod = 16; // 16 days
 
     constructor(address tokenAddress) {
         token = IERC20(tokenAddress);
+        owner = msg.sender;
     }
 
-    function stake(uint256 amount, uint256 lockPeriod) external {
+    event Staked(address by, uint256 amount);
+    event Withdrawn(address by, uint256 amount);
+    event RewardEarned(address by, uint256 amount);
+    event SetLockPeriodUpdated(address by, uint256 newLockPeriod);
+    event SetRewardPercentUpdated(address by, uint256 newRewardPercent);
+    event SetSecondsPerDayUpdated(address by, uint256 newSecondsPerDay);
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can call this function");
+        _;
+    }
+
+    function stake(uint256 amount) external {
         require(amount > 0, "Amount must be greater than zero");
 
         // If user already has an active stake, add to it
@@ -60,6 +77,7 @@ contract StakingBEET {
         }
 
         token.transferFrom(msg.sender, address(this), amount);
+        emit Staked(msg.sender, amount);
     }
 
     function withdraw() external {
@@ -76,6 +94,9 @@ contract StakingBEET {
         delete stakes[msg.sender];
 
         token.transfer(msg.sender, totalAmount);
+
+        emit Withdrawn(msg.sender, amount);
+        emit RewardEarned(msg.sender, reward);
     }
 
     function calculateReward(address user) public view returns (uint256) {
@@ -84,7 +105,7 @@ contract StakingBEET {
         uint256 stakeDuration = block.timestamp - stakes[user].startTime;
         uint256 reward = (stakes[user].amount *
             rewardPercentPerYear *
-            stakeDuration) / secondsPerYear;
+            stakeDuration) / (secondsPerDay * 365);
         return reward;
     }
 
@@ -97,18 +118,31 @@ contract StakingBEET {
         stakes[msg.sender].startTime = block.timestamp;
     }
 
-    function setLockPeriod(uint256 lockPeriod) external {
-        require(lockPeriod > 0, "Lock period must be greater than zero");
-        require(stakes[msg.sender].active, "No active stake");
+    function setLockPeriod(uint256 lockDays) external onlyOwner {
+        require(lockDays > 0, "Lock period must be greater than zero");
 
         stakes[msg.sender].unlockTime =
             stakes[msg.sender].startTime +
-            (lockPeriod * secondsPerDay);
+            (lockDays * secondsPerDay);
+
+        emit SetLockPeriodUpdated(msg.sender, lockDays);
     }
 
-    function setRewardPercentPerYear(uint256 percent) external {
+    function setSecondsPerDay(uint256 _secondsPerDay) external onlyOwner {
+        require(
+            _secondsPerDay > 0,
+            "Seconds per day must be greater than zero"
+        );
+        secondsPerDay = _secondsPerDay;
+
+        emit SetSecondsPerDayUpdated(msg.sender, _secondsPerDay);
+    }
+
+    function setRewardPercentPerYear(uint256 percent) external onlyOwner {
         require(percent > 0, "Reward percent must be greater than zero");
         rewardPercentPerYear = percent;
+
+        emit SetRewardPercentUpdated(msg.sender, newRewardPercent);
     }
 
     function getStakedAmount(address user) external view returns (uint256) {
@@ -119,7 +153,6 @@ contract StakingBEET {
         if (stakes[user].active && block.timestamp < stakes[user].unlockTime) {
             return stakes[user].unlockTime - block.timestamp;
         }
-
         return 0;
     }
 }
