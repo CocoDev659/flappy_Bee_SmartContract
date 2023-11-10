@@ -1,24 +1,24 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.19;
 
-// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-// import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-// import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-interface TokenBEET {
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
+// interface TokenBEET {
+//     function transferFrom(
+//         address sender,
+//         address recipient,
+//         uint256 amount
+//     ) external returns (bool);
 
-    function transfer(
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
+//     function transfer(
+//         address recipient,
+//         uint256 amount
+//     ) external returns (bool);
 
-    function balanceOf(address account) external view returns (uint256);
-}
+//     function balanceOf(address account) external view returns (uint256);
+// }
 
 contract StakingBEET {
     struct Stake {
@@ -31,13 +31,13 @@ contract StakingBEET {
     mapping(address => Stake) public stakes;
     mapping(address => uint256) public rewards;
 
-    TokenBEET public token;
+    IERC20 public token;
     uint256 public rewardPercentPerYear = 12; // 12% pe year
     uint256 public constant secondsPerDay = 86400; // 24*60*60 secs = one day
     uint256 public constant secondsPerYear = 31536000;
 
     constructor(address tokenAddress) {
-        token = TokenBEET(tokenAddress);
+        token = IERC20(tokenAddress);
     }
 
     function stake(uint256 amount, uint256 lockPeriod) external {
