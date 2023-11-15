@@ -1,49 +1,5 @@
-pragma solidity ^0.8.0;
-
-contract MyContract {
-    struct Record {
-        uint256 date;
-        uint256 time;
-        uint256 score;
-        address walletAddress;
-    }
-
-    Record[] public records;
-
-    function addRecord(uint256 _date, uint256 _time, uint256 _score, address _walletAddress) public {
-        Record memory newRecord = Record({
-            date: _date,
-            time: _time,
-            score: _score,
-            walletAddress: _walletAddress
-        });
-
-        records.push(newRecord);
-    }
-
-    function getRecordsCount() public view returns (uint256) {
-        return records.length;
-    }
-
-    function findRecordsByWalletAddress(address _walletAddress) public view returns (Record[] memory) {
-        Record[] memory matchingRecords;
-
-        for (uint256 i = 0; i < records.length; i++) {
-            if (records[i].walletAddress == _walletAddress) {
-                matchingRecords.push(records[i]);
-            }
-        }
-
-        return matchingRecords;
-    }
-
-    function removeRecordsByWalletAddress(address _walletAddress) public {
-        for (uint256 i = records.length - 1; i >= 0; i--) {
-            if (records[i].walletAddress == _walletAddress) {
-                // Remove the record at index i by swapping it with the last record in the array
-                records[i] = records[records.length - 1];
-                records.pop();
-            }
-        }
-    }
-}
+// smart contract includes these functions. 
+// 1. stake token 
+// 2. unstake any amount of token anytime from staked token and individual unstaked token will be locked for 16 days and then it will be back to user's address after locked time. 
+// 3. Claim rewards anytime based on staked amount. 
+// 4. staking reward is 12% per year.
