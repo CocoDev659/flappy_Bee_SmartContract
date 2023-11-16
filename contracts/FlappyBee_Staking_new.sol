@@ -3,10 +3,8 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract StakingBEET {
-    using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
     struct Stake {
@@ -47,8 +45,8 @@ contract StakingBEET {
         address indexed newOwner
     );
     event SetRewardTokenAddress(address by, address token);
-
-    event WithdrawnAll(address by, uint256 amount);
+    event WithdrawnUnstaked(address by, uint256 amount);
+    event RecoveredTokens(address by, uint256 amount);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the owner can call this function");
@@ -61,6 +59,7 @@ contract StakingBEET {
         // If user already has an active stake, add to it
         if (stakes[msg.sender].active) {
             stakes[msg.sender].amount += amount;
+
             unstakedInfo[msg.sender].push(UnstakedToken(amount, 0, false));
         } else {
             stakes[msg.sender] = Stake(
@@ -110,7 +109,7 @@ contract StakingBEET {
         unstakedToken.withdrawn = true;
         token.safeTransfer(msg.sender, unstakedToken.amount);
 
-        emit Unstaked(msg.sender, unstakedToken.amount);
+        emit WithdrawnUnstaked(msg.sender, unstakedToken.amount);
     }
 
     function claimReward() external {
@@ -206,11 +205,11 @@ contract StakingBEET {
         owner = newOwner;
     }
 
-    function withdrawAllStakedTokens() external onlyOwner {
+    function recoverTokens() external onlyOwner {
         uint256 balance = token.balanceOf(address(this));
-
+        require(balance > 0, "No tokens to withdraw");
         token.safeTransfer(owner, balance);
 
-        emit WithdrawnAll(owner, balance);
+        emit RecoveredTokens(owner, balance);
     }
 }

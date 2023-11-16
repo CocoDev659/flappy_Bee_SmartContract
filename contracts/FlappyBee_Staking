@@ -5,21 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-// interface TokenBEET {
-//     function transferFrom(
-//         address sender,
-//         address recipient,
-//         uint256 amount
-//     ) external returns (bool);
-
-//     function transfer(
-//         address recipient,
-//         uint256 amount
-//     ) external returns (bool);
-
-//     function balanceOf(address account) external view returns (uint256);
-// }
-
 contract StakingBEET {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -149,6 +134,28 @@ contract StakingBEET {
         emit SetRewardPercentUpdated(msg.sender, percent);
     }
 
+    function getFlagEventTimeCycle(uint256 cycle) external view returns (bool) {
+        uint256 setPeriod = lockPeriod;
+        require(
+            setPeriod >
+                (block.timestamp - lockPeriod * secondsPerDay) /
+                    (cycle * secondsPerDay),
+            "Reward Cycle is still locked"
+        );
+        return
+            (block.timestamp - (lockPeriod * secondsPerDay) / (cycle)) > 0
+                ? true
+                : false;
+    }
+
+    function setRewardsBasedOnCycle(uint256 cycle) external onlyOwner {
+        require(cycle > 0, "Cycle should be greater than zero");
+        if (cycle * secondsPerDay < lockPeriod / rewardPercentPerYear) {
+            lockPeriod = 0;
+        }
+        lockPeriod = cycle * rewardPercentPerYear;
+    }
+
     function getStakedAmount(address user) external view returns (uint256) {
         return stakes[user].amount;
     }
@@ -165,13 +172,5 @@ contract StakingBEET {
 
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
-    }
-
-    function withdrawAll() external onlyOwner {
-        uint256 balance = token.balanceOf(address(this));
-
-        token.safeTransfer(owner, balance);
-
-        emit Withdrawn(owner, balance);
     }
 }
