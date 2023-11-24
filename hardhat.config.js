@@ -105,7 +105,7 @@ module.exports = {
       accounts: [process.env.PRIVATEKEY],
     },
     bsctest: {
-      url: "https://endpoints.omniatech.io/v1/bsc/testnet/public",
+      url: "wss://bsc-testnet.publicnode.com",
       chainId: 97,
       gas: 2100000,
       gasPrice: 20000000000,
