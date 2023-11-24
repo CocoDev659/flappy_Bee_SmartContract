@@ -18,7 +18,7 @@ async function main() {
   const greeter = await nftCollection.deploy(
     "FlappyBee",
     "BEET",
-    100000000000000,
+    100000000000000000000000000000000,
     "0x0b043cf92214d72ec5ace6e54805797d627448e1"
   );
 
