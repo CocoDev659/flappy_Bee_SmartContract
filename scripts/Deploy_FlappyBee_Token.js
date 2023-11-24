@@ -14,8 +14,13 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const nftCollection = await hre.ethers.getContractFactory("BEET");
-  const greeter = await nftCollection.deploy();
+  const nftCollection = await hre.ethers.getContractFactory("FlappyBee");
+  const greeter = await nftCollection.deploy(
+    "FlappyBee",
+    "BEET",
+    100000000000000,
+    "0x0b043cf92214d72ec5ace6e54805797d627448e1"
+  );
 
   await greeter.deployed();
 

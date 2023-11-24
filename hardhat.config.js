@@ -66,7 +66,7 @@ module.exports = {
   },
   defaultNetwork: "goerli",
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: process.env.BSCSCAN_API_KEY,
   },
   networks: {
     localhost: {
@@ -76,7 +76,7 @@ module.exports = {
       accounts: [process.env.PRIVATEKEY],
     },
     goerli: {
-      url: "https://goerli.infura.io/v3/b45ff4de8a1e4e7db9b781b4a8fcdc5a",
+      url: "https://goerli.infura.io/v3/f0d697f8f338430d84ebc46b03e96ca0",
       chainId: 5,
       accounts: [`0x${process.env.PRIVATEKEY}`],
       gas: "auto",
@@ -84,14 +84,14 @@ module.exports = {
       maxCodeSize: 10000000,
     },
     rinkeby: {
-      url: "https://rinkeby.infura.io/v3/b45ff4de8a1e4e7db9b781b4a8fcdc5a",
+      url: "https://rinkeby.infura.io/v3/f0d697f8f338430d84ebc46b03e96ca0",
       chainId: 4,
       gas: 2100000,
       gasPrice: 20000000000,
       accounts: [process.env.PRIVATEKEY],
     },
     mainnet: {
-      url: "https://mainnet.infura.io/v3/b45ff4de8a1e4e7db9b781b4a8fcdc5a",
+      url: "https://mainnet.infura.io/v3/f0d697f8f338430d84ebc46b03e96ca0",
       chainId: 1,
       gas: 2100000,
       gasPrice: 20000000000,
