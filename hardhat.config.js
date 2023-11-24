@@ -52,6 +52,16 @@ module.exports = {
           },
         },
       },
+      {
+        version: "0.8.18",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 2000,
+            // details: { yul: false },
+          },
+        },
+      },
     ],
   },
   defaultNetwork: "goerli",
@@ -87,8 +97,15 @@ module.exports = {
       gasPrice: 20000000000,
       accounts: [process.env.PRIVATEKEY],
     },
+    bscmain: {
+      url: "https://binance.llamarpc.com",
+      chainId: 56,
+      gas: 2100000,
+      gasPrice: 20000000000,
+      accounts: [process.env.PRIVATEKEY],
+    },
     bsctest: {
-      url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+      url: "https://endpoints.omniatech.io/v1/bsc/testnet/public",
       chainId: 97,
       gas: 2100000,
       gasPrice: 20000000000,
@@ -107,6 +124,14 @@ module.exports = {
       gas: 2100000,
       gasPrice: 20000000000,
       accounts: [process.env.PRIVATEKEY],
+    },
+    nautchain: {
+      url: "https://api.proteus.nautchain.xyz/solana",
+      chainId: 88002,
+      accounts: [`0x${process.env.PRIVATEKEY}`],
+      gas: "auto",
+      gasPrice: "auto",
+      maxCodeSize: 10000000,
     },
   },
 };

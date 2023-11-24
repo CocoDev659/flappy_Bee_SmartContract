@@ -1,4 +1,5 @@
 const { expect } = require("chai");
+const { ethers } = require("ethers");
 
 describe("StakingBEET", function () {
   let stakingBEET;
@@ -39,6 +40,9 @@ describe("StakingBEET", function () {
     const amountToStake = ethers.utils.parseEther("10");
     const lockPeriod = 16; // Lock period in days
 
+    const amountToUnstake = ethers.utils.parseEther("5");
+
+
     // User1 stakes tokens
     await stakingBEET.connect(user1).stake(amountToStake);
 
@@ -51,13 +55,8 @@ describe("StakingBEET", function () {
     // User1 unstakes tokens
     await stakingBEET.connect(user1).unstake(amountToStake);
 
-    // Check the unstaked tokens for User1
     const unstakedTokens = await stakingBEET.getUnstakedTokens(user1.address);
     expect(unstakedTokens.length).to.equal(1);
     expect(unstakedTokens[0].amount).to.equal(amountToStake);
-
-    // Add more assertions as needed
   });
-
-  // Add more test cases as needed
 });
