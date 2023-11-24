@@ -22,36 +22,7 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 module.exports = {
   solidity: {
     compilers: [
-      {
-        version: "0.8.7",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 2000,
-            // details: { yul: false },
-          },
-        },
-      },
-      {
-        version: "0.8.19",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 2000,
-            // details: { yul: false },
-          },
-        },
-      },
-      {
-        version: "0.8.21",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 2000,
-            // details: { yul: false },
-          },
-        },
-      },
+      
       {
         version: "0.8.18",
         settings: {
@@ -104,7 +75,7 @@ module.exports = {
       gasPrice: 20000000000,
       accounts: [process.env.PRIVATEKEY],
     },
-    bsctest: {
+    bscTestnet: {
       url: "https://bsc-testnet.publicnode.com",
       chainId: 97,
       gas: 2100000,
