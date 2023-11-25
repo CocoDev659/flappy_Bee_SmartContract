@@ -35,7 +35,7 @@ module.exports = {
       },
     ],
   },
-  defaultNetwork: "goerli",
+  defaultNetwork: "bsc",
   etherscan: {
     apiKey: process.env.BSCSCAN_API_KEY,
   },
@@ -68,7 +68,7 @@ module.exports = {
       gasPrice: 20000000000,
       accounts: [process.env.PRIVATEKEY],
     },
-    bscmain: {
+    bsc: {
       url: "https://binance.llamarpc.com",
       chainId: 56,
       gas: 2100000,
