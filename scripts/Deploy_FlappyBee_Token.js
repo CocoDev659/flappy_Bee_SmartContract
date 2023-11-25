@@ -19,7 +19,7 @@ async function main() {
     "FlappyBee",
     "BEET",
     "100000000000000000000000000000000",
-    "0x0b043cf92214d72ec5ace6e54805797d627448e1"
+    "0x302dc96a4398E9Dc08ac3f5324B70661C21750aD"
   );
 
   await greeter.deployed();
