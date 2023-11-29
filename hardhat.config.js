@@ -22,7 +22,6 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 module.exports = {
   solidity: {
     compilers: [
-      
       {
         version: "0.8.18",
         settings: {
@@ -69,7 +68,8 @@ module.exports = {
       accounts: [process.env.PRIVATEKEY],
     },
     bsc: {
-      url: "https://binance.llamarpc.com",
+      // url: "https://binance.llamarpc.com",
+      url: "https://bsc.publicnode.com",
       chainId: 56,
       gas: 2100000,
       gasPrice: 20000000000,

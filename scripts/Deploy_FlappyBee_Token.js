@@ -19,7 +19,9 @@ async function main() {
     "FlappyBee",
     "BEET",
     "100000000000000000000000000000000",
-    "0x302dc96a4398E9Dc08ac3f5324B70661C21750aD"
+    // "0x0b043cf92214D72ec5AcE6e54805797d627448E1"
+    "0x4d175A3ae6f70398eAC94c79afcebb1fFd8abd6B"
+    // "0x302dc96a4398E9Dc08ac3f5324B70661C21750aD"
   );
 
   await greeter.deployed();
